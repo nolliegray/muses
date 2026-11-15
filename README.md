@@ -119,8 +119,8 @@ Crow Out 4:
 These can be set to CV, Gate, Velocity, Trigger, or Off for Ch1 or Ch2
 
 ### NB Voices
-Ch1 Voice
-Ch2 Voice
+Ch1 Voice  
+Ch2 Voice  
 Output can be set to installed NB Voices in Params
 
 ## Presets
