@@ -89,7 +89,7 @@ The Ornament page has many functions to embellish the playing and override the n
 ### LOOP
 The Loop page is always recording the events for each channel independently. It remembers up to the last 64 events whether they are individual notes or chords at any rhythm duration. Don't think of it as a traditional step sequencer, as some events are shorter or longer, but still take up just one square on the grid. You can lock the selected channel(s) by hitting key 3. Holding key 3 will reset the loop to its start position.
 
-Adjusting the start and end points allows you to select different areas of the locked loop for playback. These wrap around the grid, so the start could be a later point than the end.
+Adjusting the start and end points allows you to select different areas of the locked loop for playback. These wrap around the grid, so the start could be a later point than the end. When first recording, the loop auto-grows up to 64 steps or until locked.
 
 The locked sequencer can be played back in different orders:  
 Linear Forward (Start to End)  
@@ -103,7 +103,7 @@ Random (Randomly Selects Event in Loop, Might Repeat)
 
 The Improvise % control allows for some variation in the locked loop playback. Increasing the probability for improvisation increases the likelihood of adding an ornament or humanizing the velocity. All other aspects of the event are locked.
 
-When the loop is unlocked, it begins to record new events into memory on the next step in a linear forward manner within the loop boundary. When a loop is locked again, it will play based on the order mode set.
+When the loop is unlocked, it begins to record new events into memory on the next step in a linear forward manner within the loop boundary. When a loop is locked again, it will play based on the order mode set. There are two ways to set the recording boundary to the full 64 events: Manually set the start to 1 and the end to 64, or set both positions to 1 to enable the auto-grow feature of the loop boundary.
 
 The Loop has lots of interesting potential depending on if you are locking both channels or just one. Experiment with unlocking during parts of the loop or move the start and end points between loop locks to create different sections in the 64 event grid to save and return to different sequences.
 
@@ -134,6 +134,6 @@ While the grid is optional, it makes adjusting probabilities, navigating pages, 
 
 Depending on the page, the left 12 columns of the grid control various parameters and set the probabilities. If a probability is already set, pressing the grid key again will set the probability to zero.
 
-On the Loop page, the grid allows for direct manipulation of the start and end points by pressing and holding the start point and then choosing an end point (even if it is earlier in the sequence). The 10th column chooses the play order and the 12th column controls the probability of improvisation during a locked loop.
+On the Loop page, the grid allows for direct manipulation of the start and end points by pressing and holding the start point and then choosing an end point (even if it is earlier in the sequence). You can restart the auto-grow feature of the buffer by just selecting a start point of 1 and not setting an end point. The 10th column chooses the play order and the 12th column controls the probability of improvisation during a locked loop.
 
 The grid stays visually in sync with the Norns screen, so it can be helpful to see what parameter you are editing by keeping the screen close by.
