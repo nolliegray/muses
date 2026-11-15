@@ -105,7 +105,7 @@ When the loop is unlocked, it begins to record new events into memory on the nex
 The Loop has lots of interesting potential depending on if you are locking both channels or just one. Experiment with unlocking during parts of the loop or move the start and end points between loop locks to create different sections in the 64 event grid to save and return to different sequences.
 
 ## Params
-In the Params menu, set the following:
+In the Params menu, set the following:  
 MIDI Device: Virtual  
 MIDI Out for Ch1: 1  
 MIDI Out for Ch2: 2  
