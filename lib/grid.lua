@@ -21,6 +21,7 @@ end
 
 -- Grid Keys Functionality
 function g.key(x, y, z)
+  -- Reset Button
   if x == 16 and y == 7 then
     grid_reset_btn_down = (z == 1)
     
@@ -38,6 +39,7 @@ function g.key(x, y, z)
   end
   
   if z == 1 then
+    -- Page Navigation
     if (x == 15 or x == 16) and y <=5 then
       local selected_page = (y - 1) * 2 + (x - 14)
       screen_page = selected_page
@@ -49,6 +51,7 @@ function g.key(x, y, z)
     end
     
     if y == 7 then
+      -- Play Pause
       if x == 15 then
         if ch1_edit then seq[1].playing = not seq[1].playing end
         if ch2_edit then seq[2].playing = not seq[2].playing end
@@ -58,6 +61,7 @@ function g.key(x, y, z)
     end
     
     if y == 8 then
+      -- Channel Select
       if x == 15 then
         if ch1_edit and not ch2_edit then
           ch1_edit = false
@@ -71,19 +75,18 @@ function g.key(x, y, z)
         end
         redraw()
         grid_redraw()
-        
+      
+      -- Loop Lock  
       elseif x == 16 then
         for ch = 1, 2 do
            if (ch == 1 and ch1_edit) or (ch == 2 and ch2_edit) then
              seq[ch].is_locked = not seq[ch].is_locked
              if seq[ch].is_locked then
+               seq[ch].bounds_set = true
                if not seq[ch].has_locked then
-                 seq[ch].loop_head = get_initial_queue(ch)
                  seq[ch].play_sub_step = get_initial_sub_step(ch)
                  seq[ch].pendulum_dir = 1
                  seq[ch].has_locked = true
-               else
-                 seq[ch].loop_head = seq[ch].current_step
                end
              end
            end
@@ -245,13 +248,39 @@ function g.key(x, y, z)
         
         if held_step == 0 then
           held_step = step
-          if ch1_edit then seq[1].start_step = step; seq[1].end_step = step end
-          if ch2_edit then seq[2].start_step = step; seq[2].end_step = step end
           param_sel = 1
         else
-          if ch1_edit then seq[1].end_step = step end
-          if ch2_edit then seq[2].end_step = step end
+          for ch = 1, 2 do
+            if (ch == 1 and ch1_edit) or (ch == 2 and ch2_edit) then
+              seq[ch].start_step = held_step
+              seq[ch].end_step = step
+              seq[ch].bounds_set = (seq[ch].start_step ~= 1 or seq[ch].end_step ~= 1)
+              
+              local s = seq[ch].start_step
+              local e = seq[ch].end_step
+              local cur = seq[ch].is_locked and seq[ch].loop_head or seq[ch].current_step
+              
+              local is_outside = false
+              if s <= e then is_outside = (cur < s or cur > e)
+              else is_outside = (cur < s and cur > e) end
+              
+              if is_outside then
+                local snap = s
+                local o = seq[ch].play_order
+                if o == 2 or o == 5 or o == 7 then snap = e end
+                
+                if seq[ch].is_locked then
+                  seq[ch].loop_head = snap
+                  seq[ch].play_sub_step = get_initial_sub_step(ch)
+                  seq[ch].pendulum_dir = 1
+                else
+                  seq[ch].current_step = snap
+                end
+              end
+            end
+          end
           param_sel = 2
+          held_step = -1
         end
         redraw()
         grid_redraw()
@@ -262,6 +291,28 @@ function g.key(x, y, z)
   if z == 0 and screen_page == 10 and x <= 8 and y <=8 then
     local step = (y - 1) * 8 + x
     if step == held_step then
+      for ch = 1, 2 do
+        if (ch == 1 and ch1_edit) or (ch == 2 and ch2_edit) then
+          seq[ch].start_step = step
+          seq[ch].end_step = step
+          seq[ch].bounds_set = (step ~= 1)
+          
+          local cur = seq[ch].is_locked and seq[ch].loop_head or seq[ch].current_step
+          if cur ~= step then
+            if seq[ch].is_locked then
+              seq[ch].loop_head = step
+              seq[ch].play_sub_step = get_initial_sub_step(ch)
+              seq[ch].pendulum_dir = 1
+            else
+              seq[ch].current_step = step
+            end
+          end
+        end
+      end
+      held_step = 0
+      redraw()
+      grid_redraw()
+    elseif held_step == -1 then
       held_step = 0
     end
   end
@@ -390,6 +441,11 @@ function grid_redraw()
     local start_s = seq[display_ch].start_step
     local end_s = seq[display_ch].end_step
     local cur_s = seq[display_ch].current_step
+    
+    if held_step > 0 then
+      start_s = held_step
+      end_s = held_step
+    end
 
     for i = 1, #order_options do
       if seq[display_ch].is_locked then

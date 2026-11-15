@@ -80,7 +80,7 @@ function init()
   params:add_number("bar_accent", "Bar Enforce Accent", 0, 127, 32)
   
   params:add_separator("Crow")
-  local crow_opts = {"Off", "Ch 1 CV", "Ch 1 Gate", "Ch 1 Velocity", "Ch 1 Trigger", "Ch 2 CV", "Ch 2 Gate", "Ch 2 Velocity", "Ch 2 Trigger"}
+  local crow_opts = {"Off", "Ch1 CV", "Ch1 Gate", "Ch1 Velocity", "Ch1 Trigger", "Ch2 CV", "Ch2 Gate", "Ch2 Velocity", "Ch2 Trigger"}
   
   for i = 1, 4 do
     local default_opt = (i == 1) and 2 or ((i == 2) and 3 or ((i == 3) and 6 or 7))
@@ -101,8 +101,8 @@ function init()
   
   params:add_separator("NB Voices")
   nb:init()
-  nb:add_param("nb_voice_1", "Ch 1 Voice")
-  nb:add_param("nb_voice_2", "Ch 2 Voice")
+  nb:add_param("nb_voice_1", "Ch1 Voice")
+  nb:add_param("nb_voice_2", "Ch2 Voice")
   nb:add_player_params()
   
   -- Ch1 and Ch2 Initial States
@@ -323,11 +323,19 @@ function enc(n, delta)
       
       if param_sel == 1 then
         seq[display_ch].start_step = util.clamp(seq[display_ch].start_step + delta, 1, 64)
-        if ch1_edit and ch2_edit then seq[ch1_edit and 2 or 1].start_step = seq[display_ch].start_step end
+        seq[display_ch].bounds_set = (seq[display_ch].start_step ~= 1 or seq[display_ch].end_step ~= 1)
+        if ch1_edit and ch2_edit then 
+          seq[ch1_edit and 2 or 1].start_step = seq[display_ch].start_step 
+          seq[ch1_edit and 2 or 1].bounds_set = seq[display_ch].bounds_set
+        end
         
       elseif param_sel == 2 then
         seq[display_ch].end_step = util.clamp(seq[display_ch].end_step + delta, 1, 64)
-        if ch1_edit and ch2_edit then seq[ch1_edit and 2 or 1].end_step = seq[display_ch].end_step end
+        seq[display_ch].bounds_set = (seq[display_ch].start_step ~= 1 or seq[display_ch].end_step ~= 1)
+        if ch1_edit and ch2_edit then 
+          seq[ch1_edit and 2 or 1].end_step = seq[display_ch].end_step 
+          seq[ch1_edit and 2 or 1].bounds_set = seq[display_ch].bounds_set
+        end
         
       elseif param_sel == 3 then
         seq[display_ch].play_order = util.clamp(seq[display_ch].play_order + delta, 1, #order_options)
@@ -402,13 +410,11 @@ function key(n, z)
            if (ch == 1 and ch1_edit) or (ch == 2 and ch2_edit) then
              seq[ch].is_locked = not seq[ch].is_locked
              if seq[ch].is_locked then
+               seq[ch].bounds_set = true
                if not seq[ch].has_locked then
-                 seq[ch].loop_head = get_initial_queue(ch)
                  seq[ch].play_sub_step = get_initial_sub_step(ch)
                  seq[ch].pendulum_dir = 1
                  seq[ch].has_locked = true
-               else
-                 seq[ch].loop_head = seq[ch].current_step
                end
              end
            end

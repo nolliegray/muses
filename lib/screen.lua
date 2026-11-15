@@ -387,9 +387,9 @@ function redraw()
     local current_val = seq[display_ch][cfg.key][param_sel]
     
     local display_str = current_val
+    -- Removed the (screen_page == 8 and param_sel >= 9) override so it pools correctly
     local is_absolute = (screen_page == 5 and param_sel == 1) or 
                         (screen_page == 6 and (param_sel >= 6 and param_sel <= 10)) or
-                        (screen_page == 8 and param_sel >= 9) or
                         (screen_page == 9 and (param_sel == 1 or param_sel == 12))
     
     if is_absolute then
@@ -446,9 +446,14 @@ function redraw()
           pool_sum = math.max(100, pool_sum)
         end
       
-      -- Velocity
+      -- Velocity (Added pooling for columns 9 and 10)
       elseif screen_page == 8 then
-        for i = 1, 8 do pool_sum = pool_sum + seq[display_ch].velocity_prob[i] end
+        if param_sel <= 8 then
+          for i = 1, 8 do pool_sum = pool_sum + seq[display_ch].velocity_prob[i] end
+        elseif param_sel >= 9 and param_sel <= 10 then
+          for i = 9, 10 do pool_sum = pool_sum + seq[display_ch].velocity_prob[i] end
+          pool_sum = math.max(100, pool_sum)
+        end
       
       -- Ornament  
       elseif screen_page == 9 then

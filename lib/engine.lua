@@ -1,5 +1,6 @@
 -- lib/engine.lua
 
+-- Strong Beat for Time Signatures
 local function is_strong_beat(num, den, bar_pos)
   if bar_pos < 0.001 then return true end
   
@@ -179,23 +180,6 @@ function step_wrap(s, e, val, delta)
   return res
 end
 
--- Initial Queue
-function get_initial_queue(ch)
-  local o = seq[ch].play_order
-  local s = seq[ch].start_step
-  local e = seq[ch].end_step
-  
-  if o == 2 then 
-    return step_wrap(s, e, e, 1)
-  elseif o == 5 or o == 7 then
-    return step_wrap(s, e, e, -1)
-  elseif o == 4 or o == 6 then
-    return step_wrap(s, e, s, 1)
-  else
-    return step_wrap(s, e, s, -1)
-  end
-end
-
 -- Sub Step
 function get_initial_sub_step(ch)
   local o = seq[ch].play_order
@@ -212,23 +196,39 @@ function seq_engine(ch)
       local base_idx, mod_roll, tuplet_count, time_mult
       local rp = seq[ch].rhythm_prob
       local live_step = nil
-      
-      -- Step Lock for Duration of Step
       local step_locked = seq[ch].is_locked
       
       local s = seq[ch].start_step
       local e = seq[ch].end_step
       
+      if seq[ch].bounds_set == nil then
+         seq[ch].bounds_set = false
+      end
+
       if not step_locked then
         if seq[ch].reset_hold then
           seq[ch].reset_hold = false
+          if not seq[ch].bounds_set then
+             seq[ch].end_step = seq[ch].current_step
+             e = seq[ch].end_step
+          end
         else
-          seq[ch].current_step = seq[ch].current_step + 1
-          if seq[ch].current_step > 64 then seq[ch].current_step = 1 end
-        end
-        
-        if seq[ch].current_step > seq[ch].end_step and seq[ch].end_step < 64 then
-           seq[ch].end_step = seq[ch].current_step
+          if not seq[ch].bounds_set then
+            -- Grow Loop Unless Set
+            seq[ch].current_step = seq[ch].current_step + 1
+            if seq[ch].current_step > 64 then 
+               seq[ch].current_step = 1 
+               seq[ch].bounds_set = true
+               seq[ch].end_step = 64
+               e = 64
+            else
+               seq[ch].end_step = seq[ch].current_step
+               e = seq[ch].end_step
+            end
+          else
+            -- Record Loop Between Start and End Points
+            seq[ch].current_step = step_wrap(s, e, seq[ch].current_step, 1)
+          end
         end
         
         local base_weights = {table.unpack(rp, 1, 6)}
@@ -243,51 +243,55 @@ function seq_engine(ch)
         
         live_step = {base_idx = base_idx, mod_roll = mod_roll, tuplet_count = tuplet_count, time_mult = time_mult, sub_steps = {}}
         seq[ch].loop_buffer[seq[ch].current_step] = live_step
+        seq[ch].loop_head = seq[ch].current_step
         
       else
-        local o = seq[ch].play_order
-        
-        seq[ch].play_sub_step = seq[ch].play_sub_step or 1
-        seq[ch].pendulum_dir = seq[ch].pendulum_dir or 1
-        
-        if o == 1 then 
-           seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, 1)
-        elseif o == 2 then 
-           seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, -1)
-        elseif o == 3 then 
-           local len = s <= e and (e - s + 1) or ((64 - s + 1) + e)
-           if len <= 1 then
-               seq[ch].loop_head = s
-           else
-               local next_head = step_wrap(s, e, seq[ch].loop_head, seq[ch].pendulum_dir)
-               if next_head == e and seq[ch].pendulum_dir == 1 then
-                   seq[ch].pendulum_dir = -1
-               elseif next_head == s and seq[ch].pendulum_dir == -1 then
-                   seq[ch].pendulum_dir = 1
-               end
-               seq[ch].loop_head = next_head
-           end
-        elseif o == 4 then 
-           local deltas = {2, -1}
-           seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, deltas[seq[ch].play_sub_step])
-           seq[ch].play_sub_step = (seq[ch].play_sub_step % 2) + 1
-        elseif o == 5 then 
-           local deltas = {-2, 1}
-           seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, deltas[seq[ch].play_sub_step])
-           seq[ch].play_sub_step = (seq[ch].play_sub_step % 2) + 1
-        elseif o == 6 then 
-           local deltas = {1, 1, 1, -1}
-           seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, deltas[seq[ch].play_sub_step])
-           seq[ch].play_sub_step = (seq[ch].play_sub_step % 4) + 1
-        elseif o == 7 then 
-           local deltas = {-1, -1, -1, 1}
-           seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, deltas[seq[ch].play_sub_step])
-           seq[ch].play_sub_step = (seq[ch].play_sub_step % 4) + 1
-        elseif o == 8 then 
-           local len = s <= e and (e - s + 1) or ((64 - s + 1) + e)
-           if len > 0 then
-               local rand_offset = math.random(0, len - 1)
-               seq[ch].loop_head = step_wrap(s, e, s, rand_offset)
+        if seq[ch].reset_hold then
+           seq[ch].reset_hold = false
+        else
+           local o = seq[ch].play_order
+           seq[ch].play_sub_step = seq[ch].play_sub_step or 1
+           seq[ch].pendulum_dir = seq[ch].pendulum_dir or 1
+           
+           if o == 1 then 
+              seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, 1)
+           elseif o == 2 then 
+              seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, -1)
+           elseif o == 3 then 
+              local len = s <= e and (e - s + 1) or ((64 - s + 1) + e)
+              if len <= 1 then
+                  seq[ch].loop_head = s
+              else
+                  local next_head = step_wrap(s, e, seq[ch].loop_head, seq[ch].pendulum_dir)
+                  if next_head == e and seq[ch].pendulum_dir == 1 then
+                      seq[ch].pendulum_dir = -1
+                  elseif next_head == s and seq[ch].pendulum_dir == -1 then
+                      seq[ch].pendulum_dir = 1
+                  end
+                  seq[ch].loop_head = next_head
+              end
+           elseif o == 4 then 
+              local deltas = {2, -1}
+              seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, deltas[seq[ch].play_sub_step])
+              seq[ch].play_sub_step = (seq[ch].play_sub_step % 2) + 1
+           elseif o == 5 then 
+              local deltas = {-2, 1}
+              seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, deltas[seq[ch].play_sub_step])
+              seq[ch].play_sub_step = (seq[ch].play_sub_step % 2) + 1
+           elseif o == 6 then 
+              local deltas = {1, 1, 1, -1}
+              seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, deltas[seq[ch].play_sub_step])
+              seq[ch].play_sub_step = (seq[ch].play_sub_step % 4) + 1
+           elseif o == 7 then 
+              local deltas = {-1, -1, -1, 1}
+              seq[ch].loop_head = step_wrap(s, e, seq[ch].loop_head, deltas[seq[ch].play_sub_step])
+              seq[ch].play_sub_step = (seq[ch].play_sub_step % 4) + 1
+           elseif o == 8 then 
+              local len = s <= e and (e - s + 1) or ((64 - s + 1) + e)
+              if len > 0 then
+                  local rand_offset = math.random(0, len - 1)
+                  seq[ch].loop_head = step_wrap(s, e, s, rand_offset)
+              end
            end
         end
         
@@ -295,7 +299,7 @@ function seq_engine(ch)
         
         local mem = seq[ch].loop_buffer[seq[ch].loop_head]
         if not mem or not mem.base_idx then 
-           mem = {base_idx=4, mod_roll=3, tuplet_count=1, time_mult=1, sub_steps={{a_idx=1, hum_roll=3}}} 
+           mem = {base_idx=4, mod_roll=3, tuplet_count=1, time_mult=1, sub_steps={{a_idx=1, hum_roll=3, will_tie=false}}} 
         end
         
         base_idx = mem.base_idx
@@ -335,15 +339,24 @@ function seq_engine(ch)
         while seq[ch].beat_counter >= measure_length - 0.001 do
           seq[ch].beat_counter = seq[ch].beat_counter - measure_length
           
-          -- Evaluate the enforcement status as we cross the barline, guaranteeing it wakes up
+          -- Bar Enforce Across Bar Line
           if not step_locked then
             local enforce_pct = seq[ch].bar_enforce or 0
             seq[ch].bar_enforced_this_bar = (enforce_pct > 0 and math.random(1, 100) <= enforce_pct)
           end
         end
         
-        local hum_norm = math.max(0, 100 - (rp[11] + rp[12]))
-        local hum_roll = get_weighted_choice({rp[11], rp[12], hum_norm}) or 3
+        -- Calculate or Retrieve Humanize Timing
+        local hum_roll = 3
+        if not step_locked then
+          local hum_norm = math.max(0, 100 - (rp[11] + rp[12]))
+          hum_roll = get_weighted_choice({rp[11], rp[12], hum_norm}) or 3
+        else
+          local mem = seq[ch].loop_buffer[seq[ch].loop_head]
+          if mem and mem.sub_steps and mem.sub_steps[sub] and mem.sub_steps[sub].hum_roll then
+            hum_roll = mem.sub_steps[sub].hum_roll
+          end
+        end
         
         local is_offbeat = (seq[ch].beat_counter % 0.5) >= 0.24 
         local swing_pct = clock_options.swing[seq[ch].swing_idx]
@@ -362,9 +375,9 @@ function seq_engine(ch)
         local a_idx
         local mem_sub = nil
         
-        -- Independent Probability Calculations
+        -- Independent Probabilties
         if not step_locked then
-          -- Force Tie
+          -- Previous Tie
           if seq[ch].next_a_idx == 2 then 
             a_idx = 2 
           else
@@ -376,12 +389,12 @@ function seq_engine(ch)
             end
           end
           
-          -- Forces Note on Downbeat
+          -- Hard Lock Rhythm Anchor (Forces Note on downbeat)
           if pre_sub_bar_pos < 0.001 and seq[ch].bar_enforced_this_bar and sub == 1 then
              a_idx = 3
           end
           
-          -- Will Tie Next Note
+          -- Tie Next Note
           if rp[10] > 0 and math.random(1, 100) <= rp[10] then
              seq[ch].next_a_idx = 2
           else
@@ -407,6 +420,7 @@ function seq_engine(ch)
           seq[ch].active_voicing = {}
           seq[ch].active_octave = {}
           seq[ch].active_base_velocity = 0
+          seq[ch].active_velocity = {}
           seq[ch].active_ornaments = {}
           
           table.insert(seq[ch].active_rhythm, 9)
@@ -416,12 +430,12 @@ function seq_engine(ch)
           end
           seq[ch].active_midi_notes = {}
           
+          -- Handle Ties in Loop Lock
           if not step_locked then table.insert(live_step.sub_steps, {a_idx = 1, hum_roll = hum_roll, will_tie = will_tie}) end
           
         elseif a_idx == 2 then 
           seq[ch].is_tied_ui = true
           
-          -- Tied Rest Compromise
           if seq[ch].is_resting then
             table.insert(seq[ch].active_rhythm, 9)
           end
@@ -453,11 +467,30 @@ function seq_engine(ch)
               local vel_base_weights = {table.unpack(seq[ch].velocity_prob, 1, 8)}
               vel_base_idx = get_weighted_choice(vel_base_weights) or 5
               seq[ch].active_base_velocity = vel_base_idx
+              seq[ch].active_velocity = {vel_base_idx}
               
               vel = velocity_vals[vel_base_idx]
-              if seq[ch].bar_enforced_this_bar and is_strong_beat(num, den, pre_sub_bar_pos) then 
-                 vel = util.clamp(vel + params:get("bar_accent"), 1, 127) 
+              
+              -- Velocity Humanization (+/- 1 to 10)
+              local v_hum_plus = seq[ch].velocity_prob[9]
+              local v_hum_minus = seq[ch].velocity_prob[10]
+              local v_hum_norm = math.max(0, 100 - (v_hum_plus + v_hum_minus))
+              local v_hum_roll = get_weighted_choice({v_hum_plus, v_hum_minus, v_hum_norm}) or 3
+              
+              if v_hum_roll == 1 then
+                vel = vel + math.random(1, 10)
+                table.insert(seq[ch].active_velocity, 9)
+              elseif v_hum_roll == 2 then
+                vel = vel - math.random(1, 10)
+                table.insert(seq[ch].active_velocity, 10)
               end
+              
+              -- Smart Accent
+              if seq[ch].bar_enforced_this_bar and is_strong_beat(num, den, pre_sub_bar_pos) then 
+                 vel = vel + params:get("bar_accent")
+              end
+              
+              vel = util.clamp(vel, 1, 127)
               
               local oct_base_weights = {table.unpack(seq[ch].octave_prob, 1, 9)}
               oct_idx = get_weighted_choice(oct_base_weights) or 5
@@ -583,6 +616,7 @@ function seq_engine(ch)
                  chord_notes = {table.unpack(chord_notes)}, hat_a = hat_a, hat_b = hat_b, hat_c = hat_c,
                  is_sustain = is_sustain, is_repeater = is_repeater, root_raw = root_raw,
                  active_note_str = seq[ch].active_note_str, active_voicing = {table.unpack(seq[ch].active_voicing)},
+                 active_velocity = {table.unpack(seq[ch].active_velocity)},
                  will_tie = will_tie
               })
             end
@@ -590,9 +624,10 @@ function seq_engine(ch)
           else
             note_idx = mem_sub.note_idx or 1
             seq[ch].active_note = note_idx
-            vel = mem_sub.vel or 64
+            
             vel_base_idx = mem_sub.vel_base_idx or 5
             seq[ch].active_base_velocity = vel_base_idx
+            
             oct_idx = mem_sub.oct_idx or 5
             dbl_sub = mem_sub.dbl_sub or false
             dbl_up = mem_sub.dbl_up or false
@@ -607,9 +642,35 @@ function seq_engine(ch)
             seq[ch].active_voicing = mem_sub.active_voicing and {table.unpack(mem_sub.active_voicing)} or {}
             
             seq[ch].is_improvising = false
+            
             if seq[ch].improvise > 0 and math.random(1, 100) <= seq[ch].improvise then
               seq[ch].is_improvising = true
               
+              -- Improvise Velocity on Loop Lock
+              local temp_vel = velocity_vals[vel_base_idx]
+              seq[ch].active_velocity = {vel_base_idx}
+              
+              local v_hum_plus = seq[ch].velocity_prob[9]
+              local v_hum_minus = seq[ch].velocity_prob[10]
+              local v_hum_norm = math.max(0, 100 - (v_hum_plus + v_hum_minus))
+              local v_hum_roll = get_weighted_choice({v_hum_plus, v_hum_minus, v_hum_norm}) or 3
+              
+              if v_hum_roll == 1 then
+                temp_vel = temp_vel + math.random(1, 10)
+                table.insert(seq[ch].active_velocity, 9)
+              elseif v_hum_roll == 2 then
+                temp_vel = temp_vel - math.random(1, 10)
+                table.insert(seq[ch].active_velocity, 10)
+              end
+              
+              -- Bar Enforce for Locked Loop
+              if seq[ch].bar_enforced_this_bar and is_strong_beat(num, den, pre_sub_bar_pos) then 
+                 temp_vel = temp_vel + params:get("bar_accent")
+              end
+              
+              vel = util.clamp(temp_vel, 1, 127)
+              
+              -- Improvise Ornaments on Loop Lock
               local op = seq[ch].ornament_prob
               is_sustain = (op[1] > 0) and (math.random(1, 100) <= op[1])
               is_repeater = (op[12] > 0) and (math.random(1, 100) <= op[12])
@@ -623,6 +684,10 @@ function seq_engine(ch)
                 hat_c = get_weighted_choice({op[10], op[11], c_norm})
               end
             else
+              -- Standard Loop Lock
+              vel = mem_sub.vel or 64
+              seq[ch].active_velocity = mem_sub.active_velocity and {table.unpack(mem_sub.active_velocity)} or {vel_base_idx}
+              
               hat_a = mem_sub.hat_a or 4
               hat_b = mem_sub.hat_b or 6
               hat_c = mem_sub.hat_c or 3
@@ -854,7 +919,6 @@ function trigger_reset(ch)
   seq[ch].beat_counter = 0
   seq[ch].pendulum_dir = 1
   
-  -- Evaluate the enforcement status immediately on start/reset
   local enforce_pct = seq[ch].bar_enforce or 0
   seq[ch].bar_enforced_this_bar = (enforce_pct > 0 and math.random(1, 100) <= enforce_pct)
   
@@ -867,9 +931,10 @@ function trigger_reset(ch)
   end
   
   if seq[ch].is_locked then
-    seq[ch].loop_head = get_initial_queue(ch)
+    seq[ch].loop_head = visual_start
     seq[ch].play_sub_step = get_initial_sub_step(ch)
     seq[ch].current_step = visual_start 
+    seq[ch].reset_hold = true 
   else
     seq[ch].current_step = visual_start
     seq[ch].reset_hold = true 
