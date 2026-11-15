@@ -10,7 +10,7 @@
 -- K3: Capture/Release Loop
 -- K3: Reset (Long Hold)
 --
--- E1: Move Pages
+-- E1: Navigate Pages
 -- E2: Select Parameters
 -- E3: Edit Parameter Value
 
