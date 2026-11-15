@@ -27,7 +27,7 @@ K2: Channel Select
 K3: Capture/Release Loop  
 K3: Reset (Long Hold)  
 
-E1: Move Pages  
+E1: Navigate Pages  
 E2: Select Parameters  
 E3: Edit Parameter Value  
 
@@ -38,6 +38,9 @@ OUT 1: Ch1 CV (Root)
 OUT 2: Ch1 Gate  
 OUT 3: Ch2 CV (Root)  
 OUT 4: Ch2 Gate 
+
+## Overview
+The overview section is located on the right side of the screen and displays what is happening on each channel and indicates which channel is actively being edited. It is always visible and shows the play status and the loop status. The overview section of the screen also shows the currently playing event by displaying the note or chord name, the rhythm icon(s), the type of ornamentation played, and if a bar line is enforced.
 
 ## Pages
 Norns screens can be navigated through 10 different pages using encoder 1. These pages allow different parameters to be set that influence the output of the sequencers. When editing a page, toggle between Ch1 or Ch2 (or both simultaneously) to edit parameters for that channel. Select the parameter to edit using encoder 2 and make the adjustment using encoder 3.
@@ -57,7 +60,7 @@ Norns screens can be navigated through 10 different pages using encoder 1. These
 The Key/Scale page lets you set the root note of the scale and what notes are in the scale. You can further modify a scale by adding or subtracting individual notes from the keyboard style interface using encoders 2 and 3.
 
 ### CLOCK/BAR
-The Clock/Bar page gives you global control over the tempo, which is shared by both channels. Clock division, swing, time signature, and bar enforce are all editable per channel. Bar Enforce is a parameter that forces the notes to fit inside of the meter set in the time signature. It ranges from 0 (off) to 100% (always) and will also activate an accent velocity that is added to the note on the downbeat (or other beats depending on time signature).
+The Clock/Bar page gives you global control over the tempo, which is shared by both channels. Clock division, swing, time signature, and bar enforce are all editable per channel. Bar enforce is a parameter that forces the notes to fit inside of the measure set by the time signature. It ranges from 0 (off) to 100% (always) and will also activate an accent velocity that is added to the note on the downbeat (or other beats depending on time signature).
 
 ### NOTE
 The Note page sets the probability for each chromatic note. If note is grayed out by the scale, it will not be selected as a root for the probability engine. The default weights are mapped to the engine's defaults for that particular scale. Some of the other pages' probabilities can affect notes in chords that may not be active.
@@ -127,7 +130,7 @@ Output can be set to installed NB Voices in Params
 Muses saves all current changes to the native Norns pset slot 1 (called muses) automatically when closing the script. You can save as many psets as you like, but you will need to save them explicitly to a different slot. If you load a different pset than the slot 1, all changes will still be auto-saved to slot 1. A good practice is to use save slots as starting points and improvise from there.
 
 ## Grid
-While the grid is optional, it makes for adjusting probabilities and navigating pages much easier. The upper right side of the grid shows the 10 pages in two columns. The bottom four keys are play/pause, reset, channel select, and loop lock. 
+While the grid is optional, it makes adjusting probabilities, navigating pages, and playing the locked looper much easier. The upper right side of the grid shows the 10 pages in two columns. The bottom four keys are play/pause, reset, channel select, and loop lock. 
 
 Depending on the page, the left 12 columns of the grid control various parameters and set the probabilities. If a probability is already set, pressing the grid key again will set the probability to zero.
 
