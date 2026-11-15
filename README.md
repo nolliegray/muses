@@ -12,9 +12,14 @@ _Aiode - Muse of Song_
 _Melete - Muse of Practice_  
 _Mneme - Muse of Memory_
 
-These relate to the core functions of Muses to generate two channels of user-weighted notes, scales, and rhythms in which to create a practice tool to find interesting and inspiring melodies or phrases. Muses can be your partner in practice, where you play along with another instrument or use it to generate phrases to practice for yourself. Muses can also lock a loop for each channel to serve as a memory for a portion of the generated sequence.
+These relate to the core functions of Muses:  
+1. Muses generates user-weighted notes, chords, and rhythms to create an improvisational song.
+2. Muses can be your partner in practice, where you play along with another instrument or use it to generate interesting phrases to practice for yourself.
+3. Muses can also lock a loop for each channel to serve as a memory for a portion of the generated sequence.
 
 Muses consists of two channels of probabilistically weighted sequences that can run independently of one another, then locked into a loop of up to 64 events. Once a loop is locked, the sequence continues to play that loop with control over start position, end position, direction, and the likelihood to improvise. A locked loop is not influenced by changes on the other pages outside of tempo and swing. Changes made to any probabilities will only be reflected once a loop is unlocked a the engine resumes determining the next event based on probability.
+
+By default, Muses generates MIDI data, but can be connected to Crow for use with modular synthesizers, or use internal NB voices.
 
 ## Controls
 K1: Play/Pause (Long Hold)  
@@ -117,6 +122,9 @@ These can be set to CV, Gate, Velocity, Trigger, or Off for Ch1 or Ch2
 Ch1 Voice
 Ch2 Voice
 Output can be set to installed NB Voices in Params
+
+## Presets
+Muses saves all current changes to the native Norns pset slot 1 (called muses) automatically when closing the script. You can save as many psets as you like, but you will need to save them explicitly to a different slot. If you load a different pset than the slot 1, all changes will still be auto-saved to slot 1. A good practice is to use save slots as starting points and improvise from there.
 
 ## Grid
 While the grid is optional, it makes for adjusting probabilities and navigating pages much easier. The upper right side of the grid shows the 10 pages in two columns. The bottom four keys are play/pause, reset, channel select, and loop lock. 
