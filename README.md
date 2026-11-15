@@ -34,10 +34,10 @@ E3: Edit Parameter Value
 ### Crow
 IN 1: Clock  
 IN 2: Reset  
-OUT 1: Ch 1 CV (Root)  
-OUT 2: Ch 1 Gate  
-OUT 3: Ch 2 CV (Root)  
-OUT 4: Ch 2 Gate 
+OUT 1: Ch1 CV (Root)  
+OUT 2: Ch1 Gate  
+OUT 3: Ch2 CV (Root)  
+OUT 4: Ch2 Gate 
 
 ## Pages
 Norns screens can be navigated through 10 different pages using encoder 1. These pages allow different parameters to be set that influence the output of the sequencers. When editing a page, toggle between Ch1 or Ch2 (or both simultaneously) to edit parameters for that channel. Select the parameter to edit using encoder 2 and make the adjustment using encoder 3.
@@ -112,11 +112,11 @@ MIDI Out for Ch2: 2
 Bar Enforce Accent: 32  
 
 ### Crow
-Crow Out 1:  
-Crow Out 2:  
-Crow Out 3:  
-Crow Out 4:  
-These can be set to CV, Gate, Velocity, Trigger, or Off for Ch1 or Ch2
+Crow Out 1: Ch1 CV (Root)  
+Crow Out 2: Ch1 Gate  
+Crow Out 3: Ch2 CV (Root)  
+Crow Out 4: Ch2 Gate  
+Any output can be set to CV, Gate, Velocity, Trigger, or Off for Ch1 or Ch2
 
 ### NB Voices
 Ch1 Voice  
