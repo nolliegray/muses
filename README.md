@@ -1,6 +1,8 @@
 # Muses
 A Weighted Generative Sequencer for Monome Norns
 
+Current Version 1.0.0
+
 Required: Monome Norns  
 Optional: Grid and Crow
 
