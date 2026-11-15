@@ -17,7 +17,7 @@ These relate to the core functions of Muses:
 2. Muses can be your partner in practice, where you play along with another instrument or use it to generate interesting phrases to practice for yourself.
 3. Muses can also lock a loop for each channel to serve as a memory for a portion of the generated sequence.
 
-Muses consists of two channels of probabilistically weighted sequences that can run independently of one another, then locked into a loop of up to 64 events. Once a loop is locked, the sequence continues to play that loop with control over start position, end position, direction, and the likelihood to improvise. A locked loop is not influenced by changes on the other pages outside of tempo and swing. Changes made to any probabilities will only be reflected once a loop is unlocked a the engine resumes determining the next event based on probability.
+Muses consists of two channels of probabilistically weighted sequences that can run independently of one another, then be locked into a loop of up to 64 events. Once a loop is locked, the sequence continues to play that loop with control over start position, end position, direction, and the likelihood to improvise. A locked loop is not influenced by changes on the other pages outside of tempo and swing. Changes made to any probabilities will only be reflected once a loop is unlocked a the engine resumes determining the next event based on probability.
 
 By default, Muses generates MIDI data, but can be connected to Crow for use with modular synthesizers, or use internal NB voices.
 
