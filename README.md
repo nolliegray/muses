@@ -69,7 +69,7 @@ The Rhythm page sets the probability for note duration from 1/32 to whole. Notes
 The Chord page has settings for the global probability that the next event will be a chord instead of a note. Set Global to 0% for no chords or 100% to always generate a chord. Chords can be either triads or sevenths, major or minor, dominant, diminished, augmented, and other variations of where the 3rd, 5th, and 7th are placed in relation to the root.
 
 ### VOICING
-The Voicing page only affects a chord. It further lends probabilities to inversions, drop 2 or drop 4, adding 6ths, 8ths, or 9ths, dropping the root, shell voicing (no 5th), and suspended 2nd or 4ths.
+The Voicing page only affects a chord. It further lends probabilities to inversions, drop 2 or drop 4, adding a 6th, 8th or 9th, dropping the root, a shell voicing (no 5th), and a suspended 2nd or 4th.
 
 ### OCTAVE
 The Octave page sets the probability for each octave, where 0 is based off of MIDI note C60 or Middle C. The last two options on the Octave page allow for a note to be doubled either above or below, playing two octaves simultaneously (but only the root note if a chord).
