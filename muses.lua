@@ -205,7 +205,7 @@ function init()
         seq[ch].div_idx       = loaded_state[ch].div_idx
         seq[ch].sig_idx       = loaded_state[ch].sig_idx
         seq[ch].swing_idx     = loaded_state[ch].swing_idx
-        seq[ch].bar_enforce   = loaded_state[ch].bar_enfoce or 0
+        seq[ch].bar_enforce   = loaded_state[ch].bar_enforce or 0
         
         build_scale(ch)
         
@@ -258,7 +258,7 @@ function enc(n, delta)
           build_scale(1)
         end
         if ch2_edit then 
-          seq[2].root_idx = util.clamp(seq[2].root_idx + delta, 1, #roots)
+          seq[2].root_idx = ch1_edit and seq[1].root_idx or util.clamp(seq[2].root_idx + delta, 1, #roots)
           build_scale(2)
         end
       elseif param_sel == 2 then
@@ -267,7 +267,7 @@ function enc(n, delta)
           build_scale(1)
         end
         if ch2_edit then 
-          seq[2].scale_idx = util.clamp(seq[2].scale_idx + delta, 1, #scales) 
+          seq[2].scale_idx = ch1_edit and seq[1].scale_idx or util.clamp(seq[2].scale_idx + delta, 1, #scales) 
           build_scale(2)
         end
       elseif param_sel >= 3 and param_sel <= 14 then
@@ -286,17 +286,17 @@ function enc(n, delta)
         end
       elseif param_sel == 2 then
         if ch1_edit then seq[1].div_idx = util.clamp(seq[1].div_idx + delta, 1, #clock_options.div) end
-        if ch2_edit then seq[2].div_idx = util.clamp(seq[2].div_idx + delta, 1, #clock_options.div) end
+        if ch2_edit then seq[2].div_idx = ch1_edit and seq[1].div_idx or util.clamp(seq[2].div_idx + delta, 1, #clock_options.div) end
       elseif param_sel == 3 then
         if ch1_edit then seq[1].swing_idx = util.clamp(seq[1].swing_idx + delta, 1, #clock_options.swing) end
-        if ch2_edit then seq[2].swing_idx = util.clamp(seq[2].swing_idx + delta, 1, #clock_options.swing) end
+        if ch2_edit then seq[2].swing_idx = ch1_edit and seq[1].swing_idx or util.clamp(seq[2].swing_idx + delta, 1, #clock_options.swing) end
       elseif param_sel == 4 then
         if ch1_edit then seq[1].sig_idx = util.clamp(seq[1].sig_idx + delta, 1, #clock_options.sig) end
-        if ch2_edit then seq[2].sig_idx = util.clamp(seq[2].sig_idx + delta, 1, #clock_options.sig) end
+        if ch2_edit then seq[2].sig_idx = ch1_edit and seq[1].sig_idx or util.clamp(seq[2].sig_idx + delta, 1, #clock_options.sig) end
       elseif param_sel == 5 then
         local accel = delta * math.abs(delta)
         if ch1_edit then seq[1].bar_enforce = util.clamp(seq[1].bar_enforce + accel, 0, 100) end
-        if ch2_edit then seq[2].bar_enforce = util.clamp(seq[2].bar_enforce + accel, 0, 100) end
+        if ch2_edit then seq[2].bar_enforce = ch1_edit and seq[1].bar_enforce or util.clamp(seq[2].bar_enforce + accel, 0, 100) end
       end
       
     elseif screen_page >= 3 and screen_page <= 9 then
