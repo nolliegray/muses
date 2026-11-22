@@ -1,5 +1,5 @@
 # Muses
-A Weighted Generative Sequencer for Monome Norns
+A Probabilistic, Melodic, Generative Sequencer for Monome Norns
 
 Current Version 1.0.0
 
