@@ -1,8 +1,9 @@
 -- Muses
 -- Ver 1.0.0
 --
--- Weighted Generative Sequencer
--- for Monome Norns
+-- A Probabilistic, Melodic,
+-- Generative Sequencer
+--
 -- Optional: Grid & Crow
 -- 
 -- K1: Play/Pause (Long Hold)
