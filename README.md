@@ -1,7 +1,7 @@
 # Muses
 A Probabilistic, Melodic, Generative Sequencer for Monome Norns
 
-Current Version 1.0.0
+Current Version 1.0.1
 
 Required: Monome Norns  
 Optional: Grid and Crow
