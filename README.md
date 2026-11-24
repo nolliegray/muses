@@ -61,33 +61,42 @@ Norns screens can be navigated through 10 different pages using encoder 1. These
 
 ### KEY/SCALE
 The Key/Scale page lets you set the root note of the scale and what notes are in the scale. You can further modify a scale by adding or subtracting individual notes from the keyboard style interface using encoders 2 and 3.
+![Key Scale](doc/01-key-scale.png)
 
 ### CLOCK/BAR
 The Clock/Bar page gives you global control over the tempo, which is shared by both channels. Clock division, swing, time signature, and bar enforce are all editable per channel. Bar enforce is a parameter that forces the notes to fit inside of the measure set by the time signature. It ranges from 0 (off) to 100% (always) and will also activate an accent velocity that is added to the note on the downbeat (or other beats depending on time signature).
+![Clock Bar](doc/02-clock-bar.png)
 
 ### NOTE
 The Note page sets the probability for each chromatic note. If note is grayed out by the scale, it will not be selected as a root for the probability engine. The default weights are mapped to the engine's defaults for that particular scale. Some of the other pages' probabilities can affect notes in chords that may not be active.
+![Note](doc/03-note.png)
 
 ### RHYTHM
 The Rhythm page sets the probability for note duration from 1/32 to whole. Notes can be further modified by setting the probability of a dotted note, a triplet, a rest, a tie, or notes arriving early (rush) or arriving late (drag). The rush and drag offset the timing by 30ms.
+![Rhythm](doc/04-rhythm.png)
 
 ### CHORD
 The Chord page has settings for the global probability that the next event will be a chord instead of a note. Set Global to 0% for no chords or 100% to always generate a chord. Chords can be either triads or sevenths, major or minor, dominant, diminished, augmented, and other variations of where the 3rd, 5th, and 7th are placed in relation to the root.
+![Chord](doc/05-chord.png)
 
 ### VOICING
 The Voicing page only affects a chord. It further lends probabilities to inversions, drop 2 or drop 4, adding a 6th, 8th or 9th, dropping the root, a shell voicing (no 5th), and a suspended 2nd or 4th.
+![Voicing](doc/06-voicing.png)
 
 ### OCTAVE
 The Octave page sets the probability for each octave, where 0 is based off of MIDI note C60 or Middle C. The last two options on the Octave page allow for a note to be doubled either above or below, playing two octaves simultaneously (but only the root note if a chord).
+![Octave](doc/07-octave.png)
 
 ### VELOCITY
 The Velocity page sets the probability for MIDI note velocity from ppp to fff.  
 _ppp = 16, pp = 32, p = 48, mp = 64, mf = 80, f = 96, ff = 112, fff = 127_  
 The last two probabilities allow for humanization to randomly increase or decrease the velocity between 1 and 10.
 If Bar Enforce is on, the downbeat of the bar will have an additional velocity increase of 32 (adjustable in params).
+![Velocity](doc/08-velocity.png)
 
 ### ORNAMENT
 The Ornament page has many functions to embellish the playing and override the notes and chords selected by the probability engine. The first option allows for the probability of hitting the sustain pedal for the duration of the event. Other options include tremolos, trills, grace notes, ghost notes, mordents, scale runs, arpeggiated chords, and event repeats.
+![Ornament](doc/09-ornament.png)
 
 ### LOOP
 The Loop page is always recording the events for each channel independently. It remembers up to the last 64 events whether they are individual notes or chords at any rhythm duration. Don't think of it as a traditional step sequencer, as some events are shorter or longer, but still take up just one square on the grid. You can lock the selected channel(s) by hitting key 3. Holding key 3 will reset the loop to its start position.
@@ -109,6 +118,7 @@ The Improvise % control allows for some variation in the locked loop playback. I
 When the loop is unlocked, it begins to record new events into memory on the next step in a linear forward manner within the loop boundary. When a loop is locked again, it will play based on the order mode set. There are two ways to set the recording boundary to the full 64 events: Manually set the start to 1 and the end to 64, or set both positions to 1 to enable the auto-grow feature of the loop boundary.
 
 The Loop has lots of interesting potential depending on if you are locking both channels or just one. Experiment with unlocking during parts of the loop or move the start and end points between loop locks to create different sections in the 64 event grid to save and return to different sequences.
+![Loop](doc/10-loop.png)
 
 ## Params
 In the Params menu, set the following:  
@@ -140,3 +150,4 @@ Depending on the page, the left 12 columns of the grid control various parameter
 On the Loop page, the grid allows for direct manipulation of the start and end points by pressing and holding the start point and then choosing an end point (even if it is earlier in the sequence). You can restart the auto-grow feature of the buffer by just selecting a start point of 1 and not setting an end point. The 10th column chooses the play order and the 12th column controls the probability of improvisation during a locked loop.
 
 The grid stays visually in sync with the Norns screen, so it can be helpful to see what parameter you are editing by keeping the screen close by.
+![Grid](doc/muses-grid-loop.png)
