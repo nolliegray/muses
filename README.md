@@ -1,10 +1,13 @@
 # Muses
-A Probabilistic, Melodic, Generative Sequencer for Monome Norns
+A probabilistic, melodic, generative sequencer for Monome Norns
 
 Current Version 1.0.1
 
 Required: Monome Norns  
 Optional: Grid and Crow
+
+![muses 1.0 thumbnail](doc/muses-loop-cover.jpg)
+
 
 ## Overview
 Muses is named for the original three Boeotian Muses:  
